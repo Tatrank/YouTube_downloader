@@ -7,7 +7,6 @@ def main(page: ft.Page):
     page.title = "YouTube video downloader"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.bgcolor = "#c6f5fd"
     page.scroll = True
 
     # function that checks if video is selected and then add dropdown to select quality
@@ -15,7 +14,9 @@ def main(page: ft.Page):
         if dropdown1.value == "Video":
             cont4.content = dropdown2
             page.update()
-
+        else:
+            cont4.content = ft.Text(" ")
+            page.update()
 
     # dropdown menu to choose audio or video
     dropdown1 = ft.Dropdown(width=200, options=[
@@ -33,21 +34,21 @@ def main(page: ft.Page):
         ft.dropdown.Option("240p"),
         ft.dropdown.Option("1080p"),
         ft.dropdown.Option("1440p"),
-        ft.dropdown.Option("Nejvyšší"),
+        ft.dropdown.Option("Highest"),
     ])
 
     # alert box to alert on downloading and finishing download / function to trigger alerts
     dlg1 = ft.AlertDialog(
-        title=ft.Text("Video nebylo nalezeno"), on_dismiss=lambda e: print("Dialog dismissed!")
+        title=ft.Text("Video cannot be found")
     )
     dlg2 = ft.AlertDialog(
-        title=ft.Text("Stahuji"), on_dismiss=lambda e: print("Dialog dismissed!")
+        title=ft.Text("Downloading")
     )
     dlg3 = ft.AlertDialog(
-        title=ft.Text("Staženo"), on_dismiss=lambda e: print("Dialog dismissed!")
+        title=ft.Text("Download")
     )
     dlg4 = ft.AlertDialog(
-        title=ft.Text("Kvalita není dostupná"), on_dismiss=lambda e: print("Dialog dismissed!")
+        title=ft.Text("This quality cannot be found")
     )
     def alert1():
         page.dialog = dlg1
@@ -78,16 +79,16 @@ def main(page: ft.Page):
             return test
 
     # function to download on click
-    def download(z):
+    def download(idk):
         try:
             if (dropdown1.value == "Video"):
                 alert2()
-                if (dropdown2.value == "Nejvyšší"):
+                if (dropdown2.value == "Highest"):
                     pytube.YouTube(txt_number.value).streams.get_highest_resolution().download(tester(selected_directory))
-                    alert1()
+                    alert3()
                 else:
                     pytube.YouTube(txt_number.value).streams.get_by_resolution(dropdown2.value).download(tester(selected_directory))
-                    alert1()
+                    alert3()
             else:
                 alert2()
                 pytube.YouTube(txt_number.value).streams.get_audio_only().download(tester(selected_directory))
@@ -106,20 +107,20 @@ def main(page: ft.Page):
         page.update()
 
     picker = ft.FilePicker(on_result=get_directory_result)
-    btn_file = ft.ElevatedButton("Vyber složku", on_click=picker.get_directory_path, icon=ft.icons.SUBDIRECTORY_ARROW_LEFT)
+    btn_file = ft.ElevatedButton("Choose directory", on_click=picker.get_directory_path, icon=ft.icons.SUBDIRECTORY_ARROW_LEFT)
 
     # idk what does this do, but it is important
     page.overlay.extend([picker])
 
-    txt_number = ft.TextField(label="Zadejte URl videa", width=300)
-    btn = ft.ElevatedButton("Stáhnout", on_click=download, icon=ft.icons.DOWNLOADING_OUTLINED)
+    txt_number = ft.TextField(label="Fill in URL of YouTube video", width=300)
+    btn = ft.ElevatedButton("Download", on_click=download, icon=ft.icons.DOWNLOADING_OUTLINED)
     cont1 = ft.Container(margin=50, content=txt_number, )
     cont2 = ft.Container(margin=35, content=dropdown1)
     cont3 = ft.Container(margin=35, content=btn)
     cont4 = ft.Container(margin=35, )
     text_header = ft.Text(size=40, value="YouTube video downloader")
 
-    page.add(text_header, cont1, cont2,cont4, btn_file, directory_path, cont3, text)
+    page.add(text_header, cont1, cont2, cont4, btn_file, directory_path, cont3, text)
 
 
 ft.app(target=main)
